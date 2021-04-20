@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="utf-8">
+    <title>Three.js的HelloWorld</title>
+    <!-- 這邊設定CSS樣式 -->
+    <style>
+        /* 這邊是填寫要設定的CSS樣式 */
+    </style>
+    <!-- 以下載入 Three.js-->
+    <script src="https://cdn.jsdelivr.net/npm/three@latest/build/three.min.js"></script>
+</head>
+
+<body>
+    <script>
+        // 宣告變數：場景、渲染器、相機
+        let scene, renderer, camera;
+        // 宣告變數：要建立的物體
+        let cube;
+
+        function init() {
+            // 建立場景
+            scene = new THREE.Scene();
+
+            // 建立渲染器
+            renderer = new THREE.WebGLRenderer();
+            // 根據視窗的寬高設定場景尺寸
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            // 設定背景顏色 .setClearColor ( color : Color [顏色], alpha : Float [透明度] )
+            renderer.setClearColor(0xffffff, 1.0);
+            // 設定陰影效果
+            renderer.shadowMap.enable = true;
+
+            // 將渲染器的 DOM 綁到網頁上
+            document.body.appendChild(renderer.domElement);
+
+            // 建立相機，這邊建立的是透視投影相機，越遠的物體其尺寸越小
+            // PerspectiveCamera( fov : Number, aspect : Number, near : Number, far : Number )
+            //     fov 視角— Camera frustum vertical field of view.
+            //     aspect 畫面比例 — Camera frustum aspect ratio.
+            //     near 看多近 — Camera frustum near plane.
+            //     far 看多遠 — Camera frustum far plane.
+            camera = new THREE.PerspectiveCamera(
+                45,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                100
+            );
+            // 設定相機的位置
+            camera.position.set(10, 10, 10);
+            // 設定相機對著誰看，如果是對著固定的場景位置，則是如下所設定
+            camera.lookAt(scene.position);
+
+            // 建立 一個 點光源
+            let pointLight = new THREE.PointLight(0xffffff);
+            pointLight.position.set(20, 20, 20);
+            scene.add(pointLight);
+
+            // 建立物體的幾何形狀
+            const geometry = new THREE.BoxGeometry(2, 3, 5);
+            // 建立物體的材質
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x81d8d0
+            });
+            // 建立物體網格
+            cube = new THREE.Mesh(geometry, material);
+            // 設定物體位置
+            cube.position.set(0, 0, 0);
+            // 把物體增加到場景中
+            scene.add(cube);
+        }
+
+        // 建立動畫
+        function animate() {
+            cube.rotation.x += Math.random()/30;
+            cube.rotation.y += Math.random()/30;
+            cube.rotation.z += Math.random()/30;
+        }
+
+        // 渲染場景
+        function render() {
+            animate();
+            // window.requestAnimationFrame()方法通知瀏覽器我們想要產生動畫
+            requestAnimationFrame(render);
+            renderer.render(scene, camera);
+        }
+        // 針對不同的螢幕尺寸寬高來調整 RWD 設定
+        window.addEventListener('resize', function () {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        })
+        init();
+        render();
+    </script>
+</body>
+
+</html>
